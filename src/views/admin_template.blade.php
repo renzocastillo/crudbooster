@@ -21,14 +21,7 @@
     @if(Session::get('theme_color')=='custom-skin')
         <link href="{{ asset("css/custom-skin.css")}}" rel="stylesheet" type="text/css"/>
     @endif
-    @if(CRUDBooster::getSetting('google_fcm_key'))
-        <link rel="manifest" href="{{asset("/manifest.json")}}"/>
-        <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-app.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-messaging.js"></script>
-    @endif
-    @if(CRUDBooster::getSetting('google_adsense_key'))
-            <script data-ad-client="{{ CRUDBooster::getSetting('google_adsense_key') }}" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    @endif
+    @include('vendor.crudbooster.admin.header')
     <!-- support rtl-->
     @if (in_array(App::getLocale(), ['ar', 'fa']))
         <link rel="stylesheet" href="//cdn.rawgit.com/morteza/bootstrap-rtl/v3.3.4/dist/css/bootstrap-rtl.min.css">
@@ -111,7 +104,7 @@
             @if($module)
                 <h1>
                     <!--Now you can define $page_icon alongside $page_tite for custom forms to follow CRUDBooster theme style -->
-                    <i class='{!! ($page_icon)?:$module->icon !!}'></i> {!! ($page_title)?:$module->name !!} &nbsp;&nbsp; 
+                    <i class='{!! ($page_icon)?:$module->icon !!}'></i> {!! ($page_title)?:$module->name !!} &nbsp;&nbsp;
 
                     <!--START BUTTON -->
 
@@ -226,7 +219,7 @@
 </script>
 
 @stack('bottom')
-
+@include('vendor.crudbooster.admin.footer')
 <!-- Optionally, you can add Slimscroll and FastClick plugins.
       Both of these plugins are recommended to enhance the
       user experience -->
