@@ -723,15 +723,22 @@ class CBController extends Controller
         $table = request('table');
         $where = request('where');
         $where = urldecode($where);
+        $orderby = request('order_by');
+        $orderby = urldecode($orderby);
         $columns = request('columns');
         $columns = explode(",", $columns);
+        $searchable_columns=Request::get('search_in') ? explode(',',Request::get('search_in')): NULL;
         $paginate=request('paginate');
         $paginate = urldecode($paginate);
         $table = CRUDBooster::parseSqlTable($table)['table'];
         $tablePK = CB::pk($table);
         $result = DB::table($table);
+        $data['columns'] = $columns;
 
         if (request('q')) {
+            if($searchable_columns){
+                $columns=$searchable_columns;
+            }
             $result->where(function ($where) use ($columns) {
                 foreach ($columns as $c => $col) {
                     if ($c == 0) {
@@ -747,10 +754,14 @@ class CBController extends Controller
             $result->whereraw($where);
         }
 
-        $result->orderby($tablePK, 'desc');
+        if($orderby){
+            $orderby= explode(',',$orderby);
+            $result->orderby($orderby[0],$orderby[1]);
+        }else{
+            $result->orderby($tablePK, 'desc');
+        }
 
         $data['result'] = $result->paginate($paginate?:6);
-        $data['columns'] = $columns;
 
         return view('crudbooster::default.type_components.datamodal.browser', $data);
     }
