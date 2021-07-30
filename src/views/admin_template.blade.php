@@ -18,6 +18,9 @@
     <!-- Theme style -->
     <link href="{{ asset("vendor/crudbooster/assets/adminlte/dist/css/AdminLTE.min.css")}}" rel="stylesheet" type="text/css"/>
     <link href="{{ asset("vendor/crudbooster/assets/adminlte/dist/css/skins/_all-skins.min.css")}}" rel="stylesheet" type="text/css"/>
+    @if(Session::get('theme_color')=='custom-skin')
+        <link href="{{ asset("css/custom-skin.css")}}" rel="stylesheet" type="text/css"/>
+    @endif
     @include('vendor.crudbooster.admin.header')
     <!-- support rtl-->
     @if (in_array(App::getLocale(), ['ar', 'fa']))
