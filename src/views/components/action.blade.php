@@ -1,20 +1,21 @@
-@foreach($addaction as $a)
-    <?php
-    foreach ($row as $key => $val) {
-        $a['url'] = str_replace("[".$key."]", $val, $a['url']);
-    }
+@if($button_action_style != 'dropdown')
+    @foreach($addaction as $a)
+        <?php
+        foreach ($row as $key => $val) {
+            $a['url'] = str_replace("[".$key."]", $val, $a['url']);
+        }
 
-    $confirm_box = '';
-    if (isset($a['confirmation']) && ! empty($a['confirmation']) && $a['confirmation']) {
+        $confirm_box = '';
+        if (isset($a['confirmation']) && ! empty($a['confirmation']) && $a['confirmation']) {
 
-        $a['confirmation_title'] = ! empty($a['confirmation_title']) ? $a['confirmation_title'] : cbLang('confirmation_title');
-        $a['confirmation_text'] = ! empty($a['confirmation_text']) ? $a['confirmation_text'] : cbLang('confirmation_text');
-        $a['confirmation_type'] = ! empty($a['confirmation_type']) ? $a['confirmation_type'] : 'warning';
-        $a['confirmation_showCancelButton'] = empty($a['confirmation_showCancelButton']) ? 'true' : 'false';
-        $a['confirmation_confirmButtonColor'] = ! empty($a['confirmation_confirmButtonColor']) ? $a['confirmation_confirmButtonColor'] : '#DD6B55';
-        $a['confirmation_confirmButtonText'] = ! empty($a['confirmation_confirmButtonText']) ? $a['confirmation_confirmButtonText'] : cbLang('confirmation_yes');;
-        $a['confirmation_cancelButtonText'] = ! empty($a['confirmation_cancelButtonText']) ? $a['confirmation_cancelButtonText'] : cbLang('confirmation_no');;
-        $a['confirmation_closeOnConfirm'] = empty($a['confirmation_closeOnConfirm']) ? 'true' : 'false';
+            $a['confirmation_title'] = ! empty($a['confirmation_title']) ? $a['confirmation_title'] : cbLang('confirmation_title');
+            $a['confirmation_text'] = ! empty($a['confirmation_text']) ? $a['confirmation_text'] : cbLang('confirmation_text');
+            $a['confirmation_type'] = ! empty($a['confirmation_type']) ? $a['confirmation_type'] : 'warning';
+            $a['confirmation_showCancelButton'] = empty($a['confirmation_showCancelButton']) ? 'true' : 'false';
+            $a['confirmation_confirmButtonColor'] = ! empty($a['confirmation_confirmButtonColor']) ? $a['confirmation_confirmButtonColor'] : '#DD6B55';
+            $a['confirmation_confirmButtonText'] = ! empty($a['confirmation_confirmButtonText']) ? $a['confirmation_confirmButtonText'] : cbLang('confirmation_yes');;
+            $a['confirmation_cancelButtonText'] = ! empty($a['confirmation_cancelButtonText']) ? $a['confirmation_cancelButtonText'] : cbLang('confirmation_no');;
+            $a['confirmation_closeOnConfirm'] = empty($a['confirmation_closeOnConfirm']) ? 'true' : 'false';
 
         $confirm_box = '
         swal({
@@ -28,8 +29,8 @@
             closeOnConfirm: '.$a['confirmation_closeOnConfirm'].', },
             function(){  location.href="'.$a['url'].'"});
 
-        ';
-    }
+            ';
+        }
 
     $label = $a['label'];
     $title = ($a['title']) ?: $a['label'];
@@ -49,21 +50,21 @@
     }
     if (isset($a['showIf'])) {
 
-        $query = $a['showIf'];
+            $query = $a['showIf'];
 
-        foreach ($row as $key => $val) {
-            $query = str_replace("[".$key."]", '"'.$val.'"', $query);
+            foreach ($row as $key => $val) {
+                $query = str_replace("[".$key."]", '"'.$val.'"', $query);
+            }
+
+            @eval("if($query) {
+              echo \"<a class='btn btn-xs btn-\$color' title='\$title' onclick='\$confirm_box' href='\$url' target='\$target' \$extra><i class='\$icon'></i> $label</a>&nbsp;\";
+        }");
+        } else {
+            echo "<a class='btn btn-xs btn-$color' title='$title' onclick='$confirm_box' href='$url' target='$target' $extra><i class='$icon'></i> $label</a>&nbsp;";
         }
-
-        @eval("if($query) {
-          echo \"<a class='btn btn-xs btn-\$color' title='\$title' onclick='\$confirm_box' href='\$url' target='\$target' \$extra><i class='\$icon'></i> $label</a>&nbsp;\";
-      }");
-    } else {
-        echo "<a class='btn btn-xs btn-$color' title='$title' onclick='$confirm_box' href='$url' target='$target' $extra><i class='$icon'></i> $label</a>&nbsp;";
-    }
-    ?>
-@endforeach
-
+        ?>
+    @endforeach
+@endif
 @if($button_action_style == 'button_text')
 
     @if(CRUDBooster::isRead() && $button_detail)
