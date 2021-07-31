@@ -40,8 +40,12 @@
     $target = $a['target'] ?: '_self';
     $extra=$a['extra'];
     $url = $a['url'];
+    $query=true;
+    $confirm_att="";
+
     if (isset($confirmation) && ! empty($confirmation)) {
         $url = "javascript:;";
+        $confirm_att="onclick='$confirm_box'";
     }
     if(isset($extra)){
         foreach ($row as $key => $val) {
@@ -55,16 +59,24 @@
             foreach ($row as $key => $val) {
                 $query = str_replace("[".$key."]", '"'.$val.'"', $query);
             }
+    }
+    if($button_action_style == 'dropdown'){
+        @eval(
+            "if($query) {
+               \$dropdown_btns[]=\"<li><a title='\$title' \$confirm_att href='\$url' target='\$target' \$extra><i class='\$icon'></i> $label</a></li>\";
+            }"
+        );        
+    }else{
+        @eval(
+            "if($query) {
+                echo \"<a class='btn btn-xs btn-\$color' title='\$title' \$confirm_att href='\$url' target='\$target' \$extra><i class='\$icon'></i> $label</a>&nbsp;\";
+            }"
+        );
+    }
 
-            @eval("if($query) {
-              echo \"<a class='btn btn-xs btn-\$color' title='\$title' onclick='\$confirm_box' href='\$url' target='\$target' \$extra><i class='\$icon'></i> $label</a>&nbsp;\";
-        }");
-        } else {
-            echo "<a class='btn btn-xs btn-$color' title='$title' onclick='$confirm_box' href='$url' target='$target' $extra><i class='$icon'></i> $label</a>&nbsp;";
-        }
-        ?>
-    @endforeach
-@endif
+    ?>
+@endforeach
+
 @if($button_action_style == 'button_text')
 
     @if(CRUDBooster::isRead() && $button_detail)
@@ -112,34 +124,11 @@
             <span class='sr-only'>Toggle Dropdown</span>
         </button>
         <ul class='dropdown-menu dropdown-menu-action' role='menu'>
-            @foreach($addaction as $a)
-                <?php
-                foreach ($row as $key => $val) {
-                    $a['url'] = str_replace("[".$key."]", $val, $a['url']);
+            <?php 
+                foreach($dropdown_btns as $btn){
+                    echo $btn;
                 }
-
-                $label = $a['label'];
-                $url = $a['url']."?return_url=".urlencode(Request::fullUrl());
-                $icon = $a['icon'];
-                $color = $a['color'] ?: 'primary';
-
-                if (isset($a['showIf'])) {
-
-                    $query = $a['showIf'];
-
-                    foreach ($row as $key => $val) {
-                        $query = str_replace("[".$key."]", '"'.$val.'"', $query);
-                    }
-
-                    @eval("if($query) {
-                        echo \"<li><a title='\$label' href='\$url'><i class='\$icon'></i> \$label</a></li>\";
-                    }");
-                } else {
-                    echo "<li><a title='$label' href='$url'><i class='$icon'></i> $label</a></li>";
-                }
-                ?>
-            @endforeach
-
+            ?>
             @if(CRUDBooster::isRead() && $button_detail)
                 <li><a class='btn-detail' title='{{cbLang("action_detail_data")}}'
                        href='{{CRUDBooster::mainpath("detail/".$row->$pk)."?return_url=".urlencode(Request::fullUrl())}}'><i
