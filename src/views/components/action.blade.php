@@ -1,5 +1,4 @@
-@if($button_action_style != 'dropdown')
-    @foreach($addaction as $a)
+@foreach($addaction as $a)
         <?php
         foreach ($row as $key => $val) {
             $a['url'] = str_replace("[".$key."]", $val, $a['url']);
