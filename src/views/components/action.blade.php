@@ -124,8 +124,10 @@
         </button>
         <ul class='dropdown-menu dropdown-menu-action' role='menu'>
             <?php 
-                foreach($dropdown_btns as $btn){
-                    echo $btn;
+                if(isset($dropdown_btns)){
+                    foreach($dropdown_btns as $btn){
+                        echo $btn;
+                    }
                 }
             ?>
             @if(CRUDBooster::isRead() && $button_detail)
