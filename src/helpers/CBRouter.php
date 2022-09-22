@@ -102,7 +102,8 @@ class CBRouter
 
     private static function cbRoute() {
         Route::group([
-            'middleware' => ['web', '\crocodicstudio\crudbooster\middlewares\CBBackend'],
+            'middleware' => array_merge(['web', '\crocodicstudio\crudbooster\middlewares\CBBackend'], config('crudbooster.MIDDLEWARE.cbRoute')),
+            'withoutMiddleware'=> config('crudbooster.WITHOUT_MIDDLEWARE.cbRoute'),
             'prefix' => config('crudbooster.ADMIN_PATH'),
             'namespace' => static::$cb_namespace,
         ], function () {
@@ -166,11 +167,7 @@ class CBRouter
             });
         });
 
-        Route::middleware(config('crudbooster.MIDDLEWARE.cbRoute'))->group(function () {
-            Route::withoutMiddleware(config('crudbooster.WITHOUT_MIDDLEWARE.cbRoute'))->group(function () {
-                static::cbRoute();
-            });
-        });
+        static::cbRoute();
     }
 
 }
