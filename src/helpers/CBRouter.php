@@ -142,11 +142,35 @@ class CBRouter
 
     public static function route() {
 
-        static::apiRoute();
-        static::uploadRoute();
-        static::authRoute();
-        static::userControllerRoute();
-        static::cbRoute();
+        Route::middleware(config('crudbooster.MIDDLEWARE.apiRoute'))->group(function () {
+            Route::withoutMiddleware(config('crudbooster.WITHOUT_MIDDLEWARE.apiRoute'))->group(function () {
+                static::apiRoute();
+            });
+        });
+        
+        Route::middleware(config('crudbooster.MIDDLEWARE.uploadRoute'))->group(function () {
+            Route::withoutMiddleware(config('crudbooster.WITHOUT_MIDDLEWARE.uploadRoute'))->group(function () {
+                static::uploadRoute();
+            });
+        });
+
+        Route::middleware(config('crudbooster.MIDDLEWARE.authRoute'))->group(function () {
+            Route::withoutMiddleware(config('crudbooster.WITHOUT_MIDDLEWARE.authRoute'))->group(function () {
+                static::authRoute();
+            });
+        });
+
+        Route::middleware(config('crudbooster.MIDDLEWARE.userControllerRoute'))->group(function () {
+            Route::withoutMiddleware(config('crudbooster.WITHOUT_MIDDLEWARE.userControllerRoute'))->group(function () {
+                static::userControllerRoute();
+            });
+        });
+
+        Route::middleware(config('crudbooster.MIDDLEWARE.cbRoute'))->group(function () {
+            Route::withoutMiddleware(config('crudbooster.WITHOUT_MIDDLEWARE.cbRoute'))->group(function () {
+                static::cbRoute();
+            });
+        });
     }
 
 }

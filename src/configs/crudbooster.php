@@ -38,6 +38,24 @@ return [
 
     'MULTIPLE_DATABASE_MODULE' => [],
 
+    //Only global middleware
+    'MIDDLEWARE' => [
+        'apiRoute' => [],
+        'uploadRoute' => [],
+        'authRoute' => [],
+        'userControllerRoute' => [],
+        'cbRoute' => [],
+    ],
+
+    //Only global middleware
+    'WITHOUT_MIDDLEWARE' => [
+        'apiRoute' => [],
+        'uploadRoute' => [],
+        'authRoute' => [],
+        'userControllerRoute' => [],
+        'cbRoute' => [],
+    ],
+
     /*
     * Layout for the Admin LTE backend theme
     *
