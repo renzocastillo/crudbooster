@@ -48,7 +48,7 @@
     }
     if(isset($extra)){
         foreach ($row as $key => $val) {
-            $extra= str_replace("[".$key."]", '"'.$val.'"', $extra);
+	        $extra= str_replace("[".$key."]", "'".$val."'", $extra);
         }
     }
     if (isset($a['showIf'])) {
