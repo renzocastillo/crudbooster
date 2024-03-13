@@ -27,7 +27,7 @@ class CRUDBoosterServiceProvider extends ServiceProvider
         $this->loadTranslationsFrom(__DIR__.'/localization','crudbooster');
         $this->loadRoutesFrom(__DIR__.'/routes.php');
 
-        if($this->app->runningInConsole()) {
+	    if($this->app->runningInConsole() && ! $this->app->environment('testing')) {
             $this->registerSeedsFrom(__DIR__.'/database/seeds');
             $this->publishes([__DIR__.'/configs/crudbooster.php' => config_path('crudbooster.php')],'cb_config');
             $this->publishes([__DIR__.'/userfiles/controllers/CBHook.php' => app_path('Http/Controllers/CBHook.php')],'CBHook');
