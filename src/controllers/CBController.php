@@ -535,13 +535,13 @@ class CBController extends Controller
                     'icon' => $s['button_icon'],
                     'url' => CRUDBooster::adminPath($s['path']).'?return_url='.urlencode(Request::fullUrl()).'&parent_table='.$table_parent.'&parent_columns='.$s['parent_columns'].'&parent_columns_alias='.(isset($s['parent_columns_alias']) ? $s['parent_columns_alias'] : '').'&parent_id=['.(! isset($s['custom_parent_id']) ? "id" : $s['custom_parent_id']).']&foreign_key='.$s['foreign_key'].'&label='.urlencode($return_label),
                     'color' => $s['button_color'],
-                    'showIf' => $s['showIf'],
+                    'showIf' => isset($s['showIf']) ? $s['showIf'] : '',
                 ];
             }
         }
 
         $mainpath = CRUDBooster::mainpath();
-        $orig_mainpath = $this->data['mainpath'];
+        $orig_mainpath = $mainpath;
         $title_field = $this->title_field;
         $html_contents = [];
         $page = (request('page')) ? request('page') : 1;
