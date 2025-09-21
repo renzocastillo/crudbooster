@@ -627,28 +627,22 @@ class CRUDBooster
             $typedata = null; // Initialize variable to prevent undefined variable error
 
             try {
-                // For testing with SQLite, use our SQLite-compatible approach
-                if (app()->environment('testing') && config('database.default') === 'sqlite') {
-                    // Try to query our SQLite-compatible information_schema_columns table
-                    $result = DB::select('SELECT DATA_TYPE FROM information_schema_columns WHERE TABLE_NAME = ? AND COLUMN_NAME = ?', [$table, $field]);
-                    if (!empty($result)) {
-                        $typedata = $result[0]->DATA_TYPE;
-                    }
-                } else {
-                    //MySQL & SQL Server
-                    $typedata = DB::select(DB::raw("select DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME='$table' and COLUMN_NAME = '$field'"))[0]->DATA_TYPE;
-                }
+                //MySQL & SQL Server
+                $typedata = DB::select(DB::raw("select DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME='$table' and COLUMN_NAME = '$field'"))[0]->DATA_TYPE;
             } catch (\Exception $e) {
+                // For SQLite and other databases that don't support INFORMATION_SCHEMA
                 // Fall back to Laravel's schema builder
-                try {
-                    $columns = DB::getSchemaBuilder()->getColumnListing($table);
-                    if (in_array($field, $columns)) {
-                        // Default to varchar if we can't determine the exact type
+                if (app()->environment('testing') && config('database.default') === 'sqlite') {
+                    try {
+                        $columns = DB::getSchemaBuilder()->getColumnListing($table);
+                        if (in_array($field, $columns)) {
+                            // For SQLite, we'll default to varchar since we can't easily get the exact type
+                            $typedata = 'varchar';
+                        }
+                    } catch (\Exception $innerE) {
+                        // If even that fails, just use varchar
                         $typedata = 'varchar';
                     }
-                } catch (\Exception $innerE) {
-                    // If even that fails, just use varchar
-                    $typedata = 'varchar';
                 }
             }
 
