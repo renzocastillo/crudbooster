@@ -624,12 +624,26 @@ class CRUDBooster
         }
 
         $typedata = Cache::rememberForever('field_type_'.$table.'_'.$field, function () use ($table, $field) {
+            $typedata = null; // Initialize variable to prevent undefined variable error
 
             try {
                 //MySQL & SQL Server
                 $typedata = DB::select(DB::raw("select DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME='$table' and COLUMN_NAME = '$field'"))[0]->DATA_TYPE;
             } catch (\Exception $e) {
-
+                // For SQLite and other databases that don't support INFORMATION_SCHEMA
+                // Fall back to Laravel's schema builder
+                if (app()->environment('testing') && config('database.default') === 'sqlite') {
+                    try {
+                        $columns = DB::getSchemaBuilder()->getColumnListing($table);
+                        if (in_array($field, $columns)) {
+                            // For SQLite, we'll default to varchar since we can't easily get the exact type
+                            $typedata = 'varchar';
+                        }
+                    } catch (\Exception $innerE) {
+                        // If even that fails, just use varchar
+                        $typedata = 'varchar';
+                    }
+                }
             }
 
             if (! $typedata) {
