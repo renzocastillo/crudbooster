@@ -560,7 +560,7 @@ class CBController extends Controller
             }
 
             foreach ($columns_table as $col) {
-                if ($col['visible'] === false) {
+                if (isset($col['visible']) && $col['visible'] === false) {
                     continue;
                 }
 
