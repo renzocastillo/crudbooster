@@ -1058,17 +1058,22 @@ class CRUDBooster
         $params = Request::all();
         $mainpath = trim(self::mainpath(), '/');
 
-        if ($params['filter_column'] && $singleSorting) {
-            foreach ($params['filter_column'] as $k => $filter) {
-                foreach ($filter as $t => $val) {
-                    if ($t == 'sorting') {
-                        unset($params['filter_column'][$k]['sorting']);
+        if(isset($params['filter_column'])) {
+
+            $filterColumn = $params['filter_column'];
+
+            if ($filterColumn && $singleSorting) {
+                foreach ($filterColumn as $k => $filter) {
+                    foreach ($filter as $t => $val) {
+                        if ($t == 'sorting') {
+                            unset($filterColumn[$k]['sorting']);
+                        }
                     }
                 }
             }
-        }
 
-        $params['filter_column'][$key][$type] = $value;
+            $filterColumn[$key][$type] = $value;
+        }
 
         if (isset($params)) {
             return $mainpath.'?'.http_build_query($params);
