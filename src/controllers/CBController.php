@@ -175,6 +175,10 @@ class CBController extends Controller
         $this->data['sub_module'] = $this->sub_module;
         $this->data['parent_field'] = (g('parent_field')) ?: $this->parent_field;
         $this->data['parent_id'] = (g('parent_id')) ?: $this->parent_id;
+        
+        // Add module_name to view data
+        $current_module = CRUDBooster::getCurrentModule();
+        $this->data['module_name'] = is_object($current_module) ? $current_module->name : $current_module;
 
         if ($this->sidebar_mode == 'mini') {
             $this->data['sidebar_mode'] = 'sidebar-mini';
