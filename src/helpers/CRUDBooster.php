@@ -150,9 +150,15 @@ class CRUDBooster
         }
 
         $query = DB::table('cms_settings')->where('name', $name)->first();
-        Cache::forever('setting_'.$name, $query->content);
-
-        return $query->content;
+        
+        if ($query && isset($query->content)) {
+            Cache::forever('setting_'.$name, $query->content);
+            return $query->content;
+        }
+        
+        // Return null if setting doesn't exist or has no content
+        Cache::forever('setting_'.$name, null);
+        return null;
     }
 
     public static function insert($table, $data = [])
