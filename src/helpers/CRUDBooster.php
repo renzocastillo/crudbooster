@@ -627,22 +627,24 @@ class CRUDBooster
             $typedata = null; // Initialize variable to prevent undefined variable error
 
             try {
-                //MySQL & SQL Server
-                $typedata = DB::select(DB::raw("select DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME='$table' and COLUMN_NAME = '$field'"))[0]->DATA_TYPE;
-            } catch (\Exception $e) {
-                // For SQLite and other databases that don't support INFORMATION_SCHEMA
-                // Fall back to Laravel's schema builder
                 if (app()->environment('testing') && config('database.default') === 'sqlite') {
-                    try {
-                        $columns = DB::getSchemaBuilder()->getColumnListing($table);
-                        if (in_array($field, $columns)) {
-                            // For SQLite, we'll default to varchar since we can't easily get the exact type
-                            $typedata = 'varchar';
-                        }
-                    } catch (\Exception $innerE) {
-                        // If even that fails, just use varchar
+                    // For SQLite in testing, use our custom information_schema_columns table
+                    $result = DB::select('SELECT DATA_TYPE FROM information_schema_columns WHERE TABLE_NAME = ? AND COLUMN_NAME = ?', [$table, $field]);
+                    if (!empty($result)) {
+                        $typedata = $result[0]->DATA_TYPE;
+                    }
+                } else {
+                    //MySQL & SQL Server
+                    $typedata = DB::select(DB::raw("select DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME='$table' and COLUMN_NAME = '$field'"))[0]->DATA_TYPE;
+                }
+            } catch (\Exception $e) {
+                try {
+                    $columns = DB::getSchemaBuilder()->getColumnListing($table);
+                    if (in_array($field, $columns)) {
                         $typedata = 'varchar';
                     }
+                } catch (\Exception $innerE) {
+                    $typedata = 'varchar';
                 }
             }
 
@@ -1249,47 +1251,6 @@ class CRUDBooster
 
     public static function getTableColumns($table)
     {
-        // For testing with SQLite, use our SQLite-compatible approach
-        if (app()->environment('testing') && config('database.default') === 'sqlite') {
-            try {
-                // Handle case where $table might already be an array
-                if (is_array($table)) {
-                    $parsedTable = $table;
-                } else {
-                    $parsedTable = CRUDBooster::parseSqlTable($table);
-                }
-                
-                // Try to query our SQLite-compatible information_schema_columns table
-                $cols = collect(DB::select('SELECT * FROM information_schema_columns WHERE TABLE_SCHEMA = :database AND TABLE_NAME = :table', [
-                    'database' => $parsedTable['database'],
-                    'table' => $parsedTable['table'],
-                ]))->map(function ($x) {
-                    return (array) $x;
-                })->toArray();
-
-                $result = [];
-                $result = $cols;
-
-                $new_result = [];
-                foreach ($result as $ro) {
-                    $new_result[] = $ro['COLUMN_NAME'];
-                }
-
-                return $new_result;
-            } catch (\Exception $e) {
-                // Fallback to Laravel's schema builder for SQLite
-                if (is_array($table)) {
-                    $tableName = $table['table'];
-                } else {
-                    $parsedTable = CRUDBooster::parseSqlTable($table);
-                    $tableName = $parsedTable['table'];
-                }
-                return DB::getSchemaBuilder()->getColumnListing($tableName);
-            }
-        }
-
-        // Original MySQL/PostgreSQL implementation
-        //$cols = DB::getSchemaBuilder()->getColumnListing($table);
         $table = CRUDBooster::parseSqlTable($table);
         $cols = collect(DB::select('SELECT * FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = :database AND TABLE_NAME = :table', [
             'database' => $table['database'],
