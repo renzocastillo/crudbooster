@@ -222,6 +222,9 @@ class CBController extends Controller
             CRUDBooster::redirect(CRUDBooster::adminPath(), cbLang('denied_access'));
         }
 
+        // Initialize parent_table to null by default
+        $data['parent_table'] = null;
+        
         if (request('parent_table')) {
             $parentTablePK = CB::pk(g('parent_table'));
             $data['parent_table'] = DB::table(request('parent_table'))->where($parentTablePK, request('parent_id'))->first();
@@ -541,7 +544,6 @@ class CBController extends Controller
         }
 
         $mainpath = CRUDBooster::mainpath();
-        $orig_mainpath = $this->data['mainpath'];
         $title_field = $this->title_field;
         $html_contents = [];
         $page = (request('page')) ? request('page') : 1;
@@ -586,16 +588,16 @@ class CBController extends Controller
                     }
                 }
 
-                if ($col['str_limit']) {
+                if (!empty($col['str_limit'])) {
                     $value = trim(strip_tags($value));
                     $value = str_limit($value, $col['str_limit']);
                 }
 
-                if ($col['nl2br']) {
+                if (!empty($col['nl2br'])) {
                     $value = nl2br($value);
                 }
 
-                if ($col['callback_php']) {
+                if (!empty($col['callback_php'])) {
                     foreach ($row as $k => $v) {
                         $col['callback_php'] = str_replace("[".$k."]", $v, $col['callback_php']);
                     }
@@ -628,7 +630,15 @@ class CBController extends Controller
             if ($this->button_table_action):
 
                 $button_action_style = $this->button_action_style;
-                $html_content[] = "<div class='button_action' style='text-align:right'>".view('crudbooster::components.action', compact('addaction', 'row', 'button_action_style', 'parent_field'))->render()."</div>";
+
+                $parent_field = null;
+                if (isset($data['parent_field'])) {
+                    $parent_field = $data['parent_field'];
+                } elseif (isset($this->data['parent_field'])) {
+                    $parent_field = $this->data['parent_field'];
+                }
+
+                $html_content[] = "<div class='button_action' style='text-align:right'>".view('crudbooster::components.action', compact('addaction', 'row', 'button_action_style', 'parent_field'))->render().'</div>';
 
             endif;//button_table_action
 
