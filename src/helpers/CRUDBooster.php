@@ -1252,12 +1252,24 @@ class CRUDBooster
     public static function getTableColumns($table)
     {
         $table = CRUDBooster::parseSqlTable($table);
-        $cols = collect(DB::select('SELECT * FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = :database AND TABLE_NAME = :table', [
-            'database' => $table['database'],
-            'table' => $table['table'],
-        ]))->map(function ($x) {
-            return (array) $x;
-        })->toArray();
+        
+        if (app()->environment('testing') && config('database.default') === 'sqlite') {
+            // For SQLite in testing, use our custom information_schema_columns table (without dot)
+            $cols = collect(DB::select('SELECT * FROM information_schema_columns WHERE TABLE_SCHEMA = :database AND TABLE_NAME = :table', [
+                'database' => $table['database'],
+                'table' => $table['table'],
+            ]))->map(function ($x) {
+                return (array) $x;
+            })->toArray();
+        } else {
+            // For MySQL/PostgreSQL, use the standard information_schema.COLUMNS
+            $cols = collect(DB::select('SELECT * FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = :database AND TABLE_NAME = :table', [
+                'database' => $table['database'],
+                'table' => $table['table'],
+            ]))->map(function ($x) {
+                return (array) $x;
+            })->toArray();
+        }
 
         $result = [];
         $result = $cols;
