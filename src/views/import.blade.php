@@ -137,13 +137,14 @@
                             @foreach($table_columns as $k=>$column)
                                 <?php
                                 $help = '';
-                                if ($column == 'id' || $column == 'created_at' || $column == 'updated_at' || $column == 'deleted_at') continue;
-                                if (substr($column, 0, 3) == 'id_') {
-                                    $relational_table = substr($column, 3);
-                                    $help = "<a href='#' title='This is foreign key, so the System will be inserting new data to table `$relational_table` if doesn`t exists'><strong>(?)</strong></a>";
-                                }
+                                if (!($column == 'id' || $column == 'created_at' || $column == 'updated_at' || $column == 'deleted_at')) {
+                                    if (substr($column, 0, 3) == 'id_') {
+                                        $relational_table = substr($column, 3);
+                                        $help = "<a href='#' title='This is foreign key, so the System will be inserting new data to table `$relational_table` if doesn`t exists'><strong>(?)</strong></a>";
+                                    }
                                 ?>
                                 <th data-no-column='{{$k}}'>{{ $column }} {!! $help !!}</th>
+                                <?php } ?>
                             @endforeach
                         </tr>
                         </thead>
@@ -151,7 +152,7 @@
 
                         <tr>
                             @foreach($table_columns as $k=>$column)
-                                <?php if ($column == 'id' || $column == 'created_at' || $column == 'updated_at' || $column == 'deleted_at') continue;?>
+                                <?php if (!($column == 'id' || $column == 'created_at' || $column == 'updated_at' || $column == 'deleted_at')) { ?>
                                 <td data-no-column='{{$k}}'>
                                     <select style='width:120px' class='form-control select_column' name='select_column[{{$k}}]'>
                                         <option value=''>** Set Column for {{$column}}</option>
@@ -160,6 +161,7 @@
                                         @endforeach
                                     </select>
                                 </td>
+                                <?php } ?>
                             @endforeach
                         </tr>
                         </tbody>
