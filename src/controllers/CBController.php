@@ -1052,21 +1052,21 @@ class CBController extends Controller
                 }
             }
 
-            if ($ro['type'] == 'checkbox' && $ro['relationship_table']) {
+            if (isset($ro['type']) && $ro['type'] == 'checkbox' && $ro['relationship_table']) {
                 continue;
             }
 
-            if ($ro['type'] == 'select2' && $ro['relationship_table']) {
+            if (isset($ro['type']) && $ro['type'] == 'select2' && $ro['relationship_table']) {
                 continue;
             }
 
             $inputdata = request($name);
 
-            if ($ro['type'] == 'money') {
+            if (isset($ro['type']) && $ro['type'] == 'money') {
                 $inputdata = preg_replace('/[^\d-]+/', '', $inputdata);
             }
 
-            if ($ro['type'] == 'child') {
+            if (isset($ro['type']) &&  $ro['type'] == 'child') {
                 continue;
             }
 
@@ -1091,7 +1091,7 @@ class CBController extends Controller
                 }
             }
 
-            if ($ro['type'] == 'checkbox') {
+            if (isset($ro['type']) && $ro['type'] == 'checkbox') {
 
                 if (is_array($inputdata)) {
                     if ($ro['datatable'] != '') {
@@ -1107,7 +1107,7 @@ class CBController extends Controller
             }
 
             //multitext colomn
-            if ($ro['type'] == 'multitext') {
+            if (isset($ro['type']) && $ro['type'] == 'multitext') {
                 $name = $ro['name'];
                 $multitext = "";
                 $maxI = ($this->arr[$name])?count($this->arr[$name]):0;
@@ -1118,7 +1118,7 @@ class CBController extends Controller
                 $this->arr[$name] = $multitext;
             }
 
-            if ($ro['type'] == 'googlemaps') {
+            if (isset($ro['type']) && $ro['type'] == 'googlemaps') {
                 if ($ro['latitude'] && $ro['longitude']) {
                     $latitude_name = $ro['latitude'];
                     $longitude_name = $ro['longitude'];
@@ -1127,7 +1127,7 @@ class CBController extends Controller
                 }
             }
 
-            if ($ro['type'] == 'select' || $ro['type'] == 'select2') {
+            if (isset($ro['type']) && ($ro['type'] == 'select' || $ro['type'] == 'select2')) {
                 if ($ro['datatable']) {
                     if ($inputdata == '') {
                         $this->arr[$name] = 0;
@@ -1135,16 +1135,16 @@ class CBController extends Controller
                 }
             }
 
-            if (@$ro['type'] == 'upload') {
+            if (isset($ro['type']) && @$ro['type'] == 'upload') {
 
-                $this->arr[$name] = CRUDBooster::uploadFile($name, $ro['encrypt'] || $ro['upload_encrypt'], $ro['resize_width'], $ro['resize_height'], CB::myId());
+                $this->arr[$name] = CRUDBooster::uploadFile($name, (isset($ro['encrypt']) && $ro['encrypt']) || (isset($ro['upload_encrypt']) && $ro['upload_encrypt']), isset($ro['resize_width']) ? $ro['resize_width'] : null, isset($ro['resize_height']) ? $ro['resize_height'] : null, CB::myId());
 
                 if (! $this->arr[$name]) {
                     $this->arr[$name] = request('_'.$name);
                 }
             }
 
-            if (@$ro['type'] == 'filemanager') {
+            if (isset($ro['type']) && @$ro['type'] == 'filemanager') {
                 $filename = str_replace('/'.config('lfm.prefix').'/'.config('lfm.files_folder_name').'/', '', $this->arr[$name]);
                 $url = 'uploads/'.$filename;
                 $this->arr[$name] = $url;
