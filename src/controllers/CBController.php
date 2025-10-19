@@ -1038,7 +1038,7 @@ class CBController extends Controller
                 continue;
             }
 
-            if ($ro['exception']) {
+            if (isset($ro['exception']) && $ro['exception']) {
                 continue;
             }
 
