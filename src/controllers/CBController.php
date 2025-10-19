@@ -1052,11 +1052,11 @@ class CBController extends Controller
                 }
             }
 
-            if (isset($ro['type']) && $ro['type'] == 'checkbox' && $ro['relationship_table']) {
+            if (isset($ro['type']) && $ro['type'] == 'checkbox' && isset($ro['relationship_table']) && $ro['relationship_table']) {
                 continue;
             }
 
-            if (isset($ro['type']) && $ro['type'] == 'select2' && $ro['relationship_table']) {
+            if (isset($ro['type']) && $ro['type'] == 'select2' && isset($ro['relationship_table']) && $ro['relationship_table']) {
                 continue;
             }
 
