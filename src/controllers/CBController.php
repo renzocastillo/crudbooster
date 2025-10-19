@@ -520,9 +520,14 @@ class CBController extends Controller
                         $result->orderby($orderby_table.'.'.$k, $v);
                     }
                 }
+                \Log::info('SQL Query before paginate (with orderby)', ['sql' => $result->toSql(), 'bindings' => $result->getBindings()]);
                 $data['result'] = $result->paginate($limit);
+                \Log::info('Paginate result (with orderby)', ['total' => $data['result']->total(), 'count' => $data['result']->count()]);
             } else {
-                $data['result'] = $result->orderby($this->table.'.'.$this->primary_key, 'desc')->paginate($limit);
+                $query = $result->orderby($this->table.'.'.$this->primary_key, 'desc');
+                \Log::info('SQL Query before paginate (default orderby)', ['sql' => $query->toSql(), 'bindings' => $query->getBindings()]);
+                $data['result'] = $query->paginate($limit);
+                \Log::info('Paginate result (default orderby)', ['total' => $data['result']->total(), 'count' => $data['result']->count()]);
             }
         }
 
