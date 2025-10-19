@@ -467,28 +467,22 @@ class CBController extends Controller
                 }
 
                 if ($type == 'between') {
-                    \Log::info('Between filter detected', ['key' => $key, 'value' => $value, 'isset_0' => isset($value[0]), 'empty_0' => empty($value[0]), 'isset_1' => isset($value[1]), 'empty_1' => empty($value[1])]);
                     if ($key && isset($value[0]) && !empty($value[0]) && isset($value[1]) && !empty($value[1])) {
-                        \Log::info('Using whereBetween', ['key' => $key, 'value' => $value]);
                         if (strpos($key, 'created_at')) {
                             $value[0] =Carbon::parse($value[0]);
                             $value[1] =Carbon::parse($value[1]);
                         }
                         $result->whereBetween($key, $value);
                     }elseif(isset($value[0]) && !empty($value[0]) && (empty($value[1]) || !isset($value[1]))){
-                        \Log::info('Using where >=', ['key' => $key, 'value' => $value[0]]);
                         if (strpos($key, 'created_at')) {
                             $value[0] = Carbon::parse($value[0]);
                         }
                         $result->where($key,'>=', $value[0]);
                     }elseif((empty($value[0]) || !isset($value[0])) && isset($value[1]) && !empty($value[1])){
-                        \Log::info('Using where <=', ['key' => $key, 'value' => $value[1]]);
                         if (strpos($key, 'created_at')) {
                             $value[1] = Carbon::parse($value[1]);
                         }
                         $result->where($key,'<=', $value[1]);
-                    } else {
-                        \Log::info('Between filter NOT applied - conditions not met', ['key' => $key, 'value' => $value]);
                     }
                 } else {
                     continue;
@@ -497,7 +491,9 @@ class CBController extends Controller
         }
 
         if ($filter_is_orderby == true) {
+            \Log::info('SQL Query before paginate', ['sql' => $result->toSql(), 'bindings' => $result->getBindings()]);
             $data['result'] = $result->paginate($limit);
+            \Log::info('Paginate result', ['total' => $data['result']->total(), 'count' => $data['result']->count()]);
         } else {
             if ($this->orderby) {
                 if (is_array($this->orderby)) {
