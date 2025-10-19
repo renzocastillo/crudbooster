@@ -963,9 +963,9 @@ class CBController extends Controller
                     foreach ($exp as &$validationItem) {
                         if (substr($validationItem, 0, 6) == 'unique') {
                             $parseUnique = explode(',', str_replace('unique:', '', $validationItem));
-                            $uniqueTable = ($parseUnique[0]) ?: $this->table;
-                            $uniqueColumn = ($parseUnique[1]) ?: $name;
-                            $uniqueIgnoreId = ($parseUnique[2]) ?: (($id) ?: '');
+                            $uniqueTable = (isset($parseUnique[0]) && $parseUnique[0]) ? $parseUnique[0] : $this->table;
+                            $uniqueColumn = (isset($parseUnique[1]) && $parseUnique[1]) ? $parseUnique[1] : $name;
+                            $uniqueIgnoreId = (isset($parseUnique[2]) && $parseUnique[2]) ? $parseUnique[2] : (($id) ?: '');
 
                             //Make sure table name
                             $uniqueTable = CB::parseSqlTable($uniqueTable)['table'];
