@@ -1344,7 +1344,7 @@ class CBController extends Controller
 
             //Insert Data Checkbox if Type Datatable
             if ($ro['type'] == 'checkbox') {
-                if ($ro['relationship_table']) {
+                if (isset($ro['relationship_table']) && $ro['relationship_table']) {
                     $datatable = explode(",", $ro['datatable'])[0];
 
                     $foreignKey2 = CRUDBooster::getForeignKey($datatable, $ro['relationship_table']);
@@ -1365,7 +1365,7 @@ class CBController extends Controller
             }
 
             if ($ro['type'] == 'select2') {
-                if ($ro['relationship_table'] && $ro["datatable_orig"] == "") {
+                if (isset($ro['relationship_table']) && $ro['relationship_table'] && isset($ro["datatable_orig"]) && $ro["datatable_orig"] == "") {
                     $datatable = explode(",", $ro['datatable'])[0];
 
                     $foreignKey2 = CRUDBooster::getForeignKey($datatable, $ro['relationship_table']);
@@ -1383,7 +1383,7 @@ class CBController extends Controller
                         }
                     }
                 }
-                if ($ro['relationship_table'] && $ro["datatable_orig"] != "") {
+                if (isset($ro['relationship_table']) && $ro['relationship_table'] && isset($ro["datatable_orig"]) && $ro["datatable_orig"] != "") {
                     $params = explode("|", $ro['datatable_orig']);
                     if(!isset($params[2])) $params[2] = "id";
                     DB::table($params[0])->where($params[2], $id)->update([$params[1] => implode(",",$inputdata)]);
