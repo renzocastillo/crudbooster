@@ -671,7 +671,7 @@ class CRUDBooster
     public static function getValueFilter($field)
     {
         $filter = Request::get('filter_column');
-        if (!empty($filter[$field])) {
+        if (!empty($filter[$field]) && isset($filter[$field]['value'])) {
             return $filter[$field]['value'];
         }
     }
@@ -679,7 +679,7 @@ class CRUDBooster
     public static function getSortingFilter($field)
     {
         $filter = Request::get('filter_column');
-        if (!empty($filter[$field])) {
+        if (!empty($filter[$field]) && isset($filter[$field]['sorting'])) {
             return $filter[$field]['sorting'];
         }
     }
@@ -687,7 +687,7 @@ class CRUDBooster
     public static function getTypeFilter($field)
     {
         $filter = Request::get('filter_column');
-        if (!empty($filter[$field])) {
+        if (!empty($filter[$field]) && isset($filter[$field]['type'])) {
             return $filter[$field]['type'];
         }
     }
