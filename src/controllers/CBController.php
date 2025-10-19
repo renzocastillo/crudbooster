@@ -1275,7 +1275,7 @@ class CBController extends Controller
         $this->return_url = ($this->return_url) ? $this->return_url : request('return_url');
 
         //insert log
-        CRUDBooster::insertLog(cbLang("log_add", ['name' => $this->arr[$this->title_field], 'module' => CRUDBooster::getCurrentModule()->name]));
+        CRUDBooster::insertLog(cbLang("log_add", ['name' => isset($this->arr[$this->title_field]) ? $this->arr[$this->title_field] : 'N/A', 'module' => CRUDBooster::getCurrentModule()->name]));
 
         if ($this->return_url) {
             if (request('submit') == cbLang('button_save_more')) {
@@ -1431,7 +1431,7 @@ class CBController extends Controller
         //insert log
         $old_values = json_decode(json_encode($row), true);
         CRUDBooster::insertLog(cbLang("log_update", [
-            'name' => $this->arr[$this->title_field],
+            'name' => isset($this->arr[$this->title_field]) ? $this->arr[$this->title_field] : (isset($row->{$this->title_field}) ? $row->{$this->title_field} : 'N/A'),
             'module' => CRUDBooster::getCurrentModule()->name,
         ]), LogsController::displayDiff($old_values, $this->arr));
 
