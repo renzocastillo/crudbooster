@@ -10,7 +10,8 @@
 
         <?php
         $datamodal_field = explode(',', $form['datamodal_columns'])[0];
-        $datamodal_value = DB::table($form['datamodal_table'])->where('id', $value)->first()->$datamodal_field;
+        $datamodal_record = DB::table($form['datamodal_table'])->where('id', $value)->first();
+        $datamodal_value = $datamodal_record ? $datamodal_record->$datamodal_field : '';
 
         ?>
 

@@ -13,7 +13,8 @@ if ($datatable && $form['relationship_table']) {
     if($form['datatable_orig'] != ''){
         $params = explode("|", $form['datatable_orig']);
         if(!isset($params[2])) $params[2] = "id";
-        $values = explode(",", DB::table($params[0])->where($params[2], $id)->first()->{$params[1]});
+        $record = DB::table($params[0])->where($params[2], $id)->first();
+        $values = $record ? explode(",", $record->{$params[1]}) : [];
         $tableData = DB::table($datatable_table)->whereIn("id", $values)->select($datatable_field)->pluck($datatable_field)->toArray();
     } else {
         $foreignKey = CRUDBooster::getForeignKey($table, $form['relationship_table']);
