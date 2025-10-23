@@ -388,10 +388,10 @@ class CBController extends Controller
         if (request('q')) {
             $result->where(function ($w) use ($columns_table) {
                 foreach ($columns_table as $col) {
-                    if (! $col['field_with']) {
+                    if (empty($col['field_with'])) {
                         continue;
                     }
-                    if ($col['is_subquery']) {
+                    if (isset($col['is_subquery']) && $col['is_subquery']) {
                         continue;
                     }
                     $w->orwhere($col['field_with'], "like", "%".request("q")."%");
