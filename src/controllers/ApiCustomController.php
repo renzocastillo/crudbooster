@@ -283,8 +283,8 @@ class ApiCustomController extends CBController
         $a = [];
 
         $a['nama'] = g('nama');
-        $a['tabel'] = $posts['tabel'];
-        $a['aksi'] = $posts['aksi'];
+        $a['tabel'] = $posts['tabel'] ?? null;
+        $a['aksi'] = $posts['aksi'] ?? null;
         $a['permalink'] = g('permalink');
         $a['method_type'] = g('method_type');
 

@@ -217,17 +217,17 @@ class ApiController extends Controller
             return response()->json($this->output);
         }
 
-        $limit = ($this->limit)?:$posts['limit'];
-        $offset = ($posts['offset']) ?: 0;
-        $orderby = ($posts['orderby']) ?: $table.'.'.$pk.',desc';
+        $limit = ($this->limit) ?: ($posts['limit'] ?? null);
+        $offset = ($posts['offset'] ?? null) ?: 0;
+        $orderby = ($posts['orderby'] ?? null) ?: $table.'.'.$pk.',desc';
         $uploads_format_candidate = explode(',', config("crudbooster.UPLOAD_TYPES"));
         $uploads_candidate = explode(',', config('crudbooster.IMAGE_FIELDS_CANDIDATE'));
         $password_candidate = explode(',', config('crudbooster.PASSWORD_FIELDS_CANDIDATE'));
         $asset = asset('/');
 
-        unset($posts['limit']);
-        unset($posts['offset']);
-        unset($posts['orderby']);
+        if (isset($posts['limit'])) unset($posts['limit']);
+        if (isset($posts['offset'])) unset($posts['offset']);
+        if (isset($posts['orderby'])) unset($posts['orderby']);
 
         if ($action_type == 'list' || $action_type == 'detail' || $action_type == 'delete') {
             $name_tmp = [];
@@ -401,7 +401,7 @@ class ApiController extends Controller
             $this->hook_query($data);
 
             if ($action_type == 'list') {
-                if ($orderby) {
+                if ($orderby && strpos($orderby, ',') !== false) {
                     $orderby_raw = explode(',', $orderby);
                     $orderby_col = $orderby_raw[0];
                     $orderby_val = $orderby_raw[1];
