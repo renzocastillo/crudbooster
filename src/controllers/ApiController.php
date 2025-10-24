@@ -118,7 +118,7 @@ class ApiController extends Controller
             foreach ($parameters as $param) {
                 $name = $param['name'];
                 $type = $param['type'];
-                $value = $posts[$name];
+                $value = $posts[$name] ?? null;
 
                 $required = $param['required'];
                 $config = $param['config'];
@@ -290,7 +290,7 @@ class ApiController extends Controller
             foreach ($parameters as $param) {
                 $name = $param['name'];
                 $type = $param['type'];
-                $value = $posts[$name];
+                $value = $posts[$name] ?? null;
                 $used = $param['used'];
                 $required = $param['required'];
                 $config = $param['config'];
@@ -338,7 +338,7 @@ class ApiController extends Controller
                 foreach ($parameters as $param) {
                     $name = $param['name'];
                     $type = $param['type'];
-                    $value = $posts[$name];
+                    $value = $posts[$name] ?? null;
                     $used = $param['used'];
                     $required = $param['required'];
 
@@ -444,7 +444,7 @@ class ApiController extends Controller
                     foreach ($parameters as $param) {
                         $name = $param['name'];
                         $type = $param['type'];
-                        $value = $posts[$name];
+                        $value = $posts[$name] ?? null;
                         $used = $param['used'];
                         $required = $param['required'];
 
@@ -516,7 +516,7 @@ class ApiController extends Controller
             foreach ($parameters as $param) {
                 $name = $param['name'];
                 $used = $param['used'];
-                $value = $posts[$name];
+                $value = $posts[$name] ?? null;
                 if ($used == '1' && $value == '') {
                     unset($row_assign[$name]);
                 }
@@ -538,7 +538,7 @@ class ApiController extends Controller
 
             foreach ($parameters as $param) {
                 $name = $param['name'];
-                $value = $posts[$name];
+                $value = $posts[$name] ?? null;
                 $config = $param['config'];
                 $type = $param['type'];
                 $required = $param['required'];
@@ -616,7 +616,7 @@ class ApiController extends Controller
             // Update The Child Table
             foreach ($parameters as $param) {
                 $name = $param['name'];
-                $value = $posts[$name];
+                $value = $posts[$name] ?? null;
                 $config = $param['config'];
                 $type = $param['type'];
                 if ($type == 'ref') {
