@@ -62,7 +62,7 @@
                                     class="fa fa-angle-{{ cbLang("right") }} pull-{{ cbLang("right") }}"></i></a>
                         <ul class='treeview-menu'>
                             <li class="{{ (Request::is(config('crudbooster.ADMIN_PATH').'/privileges/add*')) ? 'active' : '' }}"><a
-                                        href='{{Route("PrivilegesControllerGetAdd")}}'>{{ $current_path }}<i class='fa fa-plus'></i>
+                                        href='{{Route("PrivilegesControllerGetAdd")}}'><i class='fa fa-plus'></i>
                                     <span>{{ cbLang('Add_New_Privilege') }}</span></a></li>
                             <li class="{{ (Request::is(config('crudbooster.ADMIN_PATH').'/privileges')) ? 'active' : '' }}"><a
                                         href='{{Route("PrivilegesControllerGetIndex")}}'><i class='fa fa-bars'></i>
