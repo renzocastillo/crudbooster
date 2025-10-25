@@ -1,11 +1,12 @@
 <?php
-if ($form['datatable']) {
+if (isset($form['datatable']) && $form['datatable']) {
     $datatable = explode(',', $form['datatable']);
     $table = $datatable[0];
     $field = $datatable[1];
-    echo CRUDBooster::first($table, ['id' => $value])->$field;
+    $record = CRUDBooster::first($table, ['id' => $value]);
+    echo $record ? $record->$field : '';
 }
-if ($form['dataquery']) {
+if (isset($form['dataquery']) && $form['dataquery']) {
     $dataquery = $form['dataquery'];
     $query = DB::select(DB::raw($dataquery));
     if ($query) {
@@ -17,7 +18,7 @@ if ($form['dataquery']) {
         }
     }
 }
-if ($form['dataenum']) {
+if (isset($form['dataenum']) && $form['dataenum']) {
     echo $value;
 }
 ?>
