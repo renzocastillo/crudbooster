@@ -128,6 +128,17 @@ class CBController extends Controller
 
     public $sidebar_mode = 'normal';
 
+    /**
+     * Get current module name safely (returns 'Unknown' if module is null)
+     *
+     * @return string
+     */
+    protected function getCurrentModuleName()
+    {
+        $currentModule = CRUDBooster::getCurrentModule();
+        return $currentModule ? $currentModule->name : 'Unknown';
+    }
+
     public function cbLoader()
     {
         $this->cbInit();
@@ -536,7 +547,7 @@ class CBController extends Controller
         if ($this->sub_module) {
             foreach ($this->sub_module as $s) {
                 $table_parent = CRUDBooster::parseSqlTable($this->table)['table'];
-                $return_label = CRUDBooster::getCurrentModule()->name;
+                $return_label = $this->getCurrentModuleName();
                 $addaction[] = [
                     'label' => $s['label'],
                     'icon' => $s['button_icon'],
@@ -1157,11 +1168,11 @@ class CBController extends Controller
     {
         $this->cbLoader();
         if (! CRUDBooster::isCreate() && $this->global_privilege == false || $this->button_add == false) {
-            CRUDBooster::insertLog(cbLang('log_try_add', ['module' => CRUDBooster::getCurrentModule()->name]));
+            CRUDBooster::insertLog(cbLang('log_try_add', ['module' => $this->getCurrentModuleName()]));
             CRUDBooster::redirect(CRUDBooster::adminPath(), cbLang("denied_access"));
         }
 
-        $page_title = cbLang("add_data_page_title", ['module' => CRUDBooster::getCurrentModule()->name]);
+        $page_title = cbLang("add_data_page_title", ['module' => $this->getCurrentModuleName()]);
         $page_menu = Route::getCurrentRoute()->getActionName();
         $command = 'add';
 
@@ -1174,7 +1185,7 @@ class CBController extends Controller
         if (! CRUDBooster::isCreate() && $this->global_privilege == false) {
             CRUDBooster::insertLog(cbLang('log_try_add_save', [
                 'name' => Request::input($this->title_field),
-                'module' => CRUDBooster::getCurrentModule()->name,
+                'module' => $this->getCurrentModuleName(),
             ]));
             CRUDBooster::redirect(CRUDBooster::adminPath(), cbLang("denied_access"));
         }
@@ -1276,7 +1287,7 @@ class CBController extends Controller
         $this->return_url = ($this->return_url) ? $this->return_url : request('return_url');
 
         //insert log
-        CRUDBooster::insertLog(cbLang("log_add", ['name' => isset($this->arr[$this->title_field]) ? $this->arr[$this->title_field] : 'N/A', 'module' => CRUDBooster::getCurrentModule()->name]));
+        CRUDBooster::insertLog(cbLang("log_add", ['name' => isset($this->arr[$this->title_field]) ? $this->arr[$this->title_field] : 'N/A', 'module' => $this->getCurrentModuleName()]));
 
         if ($this->return_url) {
             if (request('submit') == cbLang('button_save_more')) {
@@ -1301,13 +1312,13 @@ class CBController extends Controller
         if (! CRUDBooster::isRead() && $this->global_privilege == false || $this->button_edit == false) {
             CRUDBooster::insertLog(cbLang("log_try_edit", [
                 'name' => $row->{$this->title_field},
-                'module' => CRUDBooster::getCurrentModule()->name,
+                'module' => $this->getCurrentModuleName(),
             ]));
             CRUDBooster::redirect(CRUDBooster::adminPath(), cbLang('denied_access'));
         }
 
         $page_menu = Route::getCurrentRoute()->getActionName();
-        $page_title = cbLang("edit_data_page_title", ['module' => CRUDBooster::getCurrentModule()->name, 'name' => $row->{$this->title_field}]);
+        $page_title = cbLang("edit_data_page_title", ['module' => $this->getCurrentModuleName(), 'name' => $row->{$this->title_field}]);
         $command = 'edit';
         Session::put('current_row_id', $id);
 
@@ -1320,7 +1331,7 @@ class CBController extends Controller
         $row = DB::table($this->table)->where($this->primary_key, $id)->first();
 
         if (! CRUDBooster::isUpdate() && $this->global_privilege == false) {
-            CRUDBooster::insertLog(cbLang("log_try_add", ['name' => $row->{$this->title_field}, 'module' => CRUDBooster::getCurrentModule()->name]));
+            CRUDBooster::insertLog(cbLang("log_try_add", ['name' => $row->{$this->title_field}, 'module' => $this->getCurrentModuleName()]));
             CRUDBooster::redirect(CRUDBooster::adminPath(), cbLang('denied_access'));
         }
 
@@ -1433,7 +1444,7 @@ class CBController extends Controller
         $old_values = json_decode(json_encode($row), true);
         CRUDBooster::insertLog(cbLang("log_update", [
             'name' => isset($this->arr[$this->title_field]) ? $this->arr[$this->title_field] : (isset($row->{$this->title_field}) ? $row->{$this->title_field} : 'N/A'),
-            'module' => CRUDBooster::getCurrentModule()->name,
+            'module' => $this->getCurrentModuleName(),
         ]), LogsController::displayDiff($old_values, $this->arr));
 
         if ($this->return_url) {
@@ -1460,13 +1471,13 @@ class CBController extends Controller
         if (! CRUDBooster::isDelete() && $this->global_privilege == false || $this->button_delete == false) {
             CRUDBooster::insertLog(cbLang("log_try_delete", [
                 'name' => $row->{$this->title_field},
-                'module' => CRUDBooster::getCurrentModule()->name,
+                'module' => $this->getCurrentModuleName(),
             ]));
             CRUDBooster::redirect(CRUDBooster::adminPath(), cbLang('denied_access'));
         }
 
         //insert log
-        CRUDBooster::insertLog(cbLang("log_delete", ['name' => $row->{$this->title_field}, 'module' => CRUDBooster::getCurrentModule()->name]));
+        CRUDBooster::insertLog(cbLang("log_delete", ['name' => $row->{$this->title_field}, 'module' => $this->getCurrentModuleName()]));
 
         $this->hook_before_delete($id);
 
@@ -1491,7 +1502,7 @@ class CBController extends Controller
         if (! CRUDBooster::isRead() && $this->global_privilege == false || $this->button_detail == false) {
             CRUDBooster::insertLog(cbLang("log_try_view", [
                 'name' => $row->{$this->title_field},
-                'module' => CRUDBooster::getCurrentModule()->name,
+                'module' => $this->getCurrentModuleName(),
             ]));
             CRUDBooster::redirect(CRUDBooster::adminPath(), cbLang('denied_access'));
         }
@@ -1718,7 +1729,7 @@ class CBController extends Controller
 
         if ($button_name == 'delete') {
             if (! CRUDBooster::isDelete()) {
-                CRUDBooster::insertLog(cbLang("log_try_delete_selected", ['module' => CRUDBooster::getCurrentModule()->name]));
+                CRUDBooster::insertLog(cbLang("log_try_delete_selected", ['module' => $this->getCurrentModuleName()]));
                 CRUDBooster::redirect(CRUDBooster::adminPath(), cbLang('denied_access'));
             }
 
@@ -1730,7 +1741,7 @@ class CBController extends Controller
             } else {
                 DB::table($this->table)->whereIn($tablePK, $id_selected)->delete();
             }
-            CRUDBooster::insertLog(cbLang("log_delete", ['name' => implode(',', $id_selected), 'module' => CRUDBooster::getCurrentModule()->name]));
+            CRUDBooster::insertLog(cbLang("log_delete", ['name' => implode(',', $id_selected), 'module' => $this->getCurrentModuleName()]));
 
             $this->hook_after_delete($id_selected);
 
@@ -1763,7 +1774,7 @@ class CBController extends Controller
         if (! CRUDBooster::isDelete() && $this->global_privilege == false) {
             CRUDBooster::insertLog(cbLang("log_try_delete_image", [
                 'name' => $row->{$this->title_field},
-                'module' => CRUDBooster::getCurrentModule()->name,
+                'module' => $this->getCurrentModuleName(),
             ]));
             CRUDBooster::redirect(CRUDBooster::adminPath(), cbLang('denied_access'));
         }
@@ -1779,7 +1790,7 @@ class CBController extends Controller
 
         CRUDBooster::insertLog(cbLang("log_delete_image", [
             'name' => $row->{$this->title_field},
-            'module' => CRUDBooster::getCurrentModule()->name,
+            'module' => $this->getCurrentModuleName(),
         ]));
 
         CRUDBooster::redirect(Request::server('HTTP_REFERER'), cbLang('alert_delete_data_success'), 'success');
