@@ -1452,6 +1452,11 @@ class CBController extends Controller
         $this->cbLoader();
         $row = DB::table($this->table)->where($this->primary_key, $id)->first();
 
+        if (!$row) {
+            CRUDBooster::redirect(CRUDBooster::mainpath(), cbLang('data_not_found'), 'warning');
+            return;
+        }
+
         if (! CRUDBooster::isDelete() && $this->global_privilege == false || $this->button_delete == false) {
             CRUDBooster::insertLog(cbLang("log_try_delete", [
                 'name' => $row->{$this->title_field},
