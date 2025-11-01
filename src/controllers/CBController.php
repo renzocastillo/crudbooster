@@ -1105,7 +1105,7 @@ class CBController extends Controller
             if (isset($ro['type']) && $ro['type'] == 'checkbox') {
 
                 if (is_array($inputdata)) {
-                    if ($ro['datatable'] != '' && strpos($ro['datatable'], ',') !== false) {
+                    if (isset($ro['datatable']) && $ro['datatable'] != '' && strpos($ro['datatable'], ',') !== false) {
                         $datatable_parts = explode(',', $ro['datatable']);
                         $table_checkbox = $datatable_parts[0];
                         $field_checkbox = $datatable_parts[1];
@@ -1217,7 +1217,7 @@ class CBController extends Controller
 
             //Insert Data Checkbox if Type Datatable
             if ($ro['type'] == 'checkbox') {
-                if ($ro['relationship_table']) {
+                if (isset($ro['relationship_table']) && $ro['relationship_table'] && isset($ro['datatable'])) {
                     $datatable = explode(",", $ro['datatable'])[0];
                     $foreignKey2 = CRUDBooster::getForeignKey($datatable, $ro['relationship_table']);
                     $foreignKey = CRUDBooster::getForeignKey($this->table, $ro['relationship_table']);
@@ -1237,7 +1237,7 @@ class CBController extends Controller
             }
 
             if ($ro['type'] == 'select2') {
-                if ($ro['relationship_table']) {
+                if (isset($ro['relationship_table']) && $ro['relationship_table'] && isset($ro['datatable'])) {
                     $datatable = explode(",", $ro['datatable'])[0];
                     $foreignKey2 = CRUDBooster::getForeignKey($datatable, $ro['relationship_table']);
                     $foreignKey = CRUDBooster::getForeignKey($this->table, $ro['relationship_table']);
@@ -1356,7 +1356,7 @@ class CBController extends Controller
 
             //Insert Data Checkbox if Type Datatable
             if ($ro['type'] == 'checkbox') {
-                if (isset($ro['relationship_table']) && $ro['relationship_table']) {
+                if (isset($ro['relationship_table']) && $ro['relationship_table'] && isset($ro['datatable'])) {
                     $datatable = explode(",", $ro['datatable'])[0];
 
                     $foreignKey2 = CRUDBooster::getForeignKey($datatable, $ro['relationship_table']);
@@ -1377,7 +1377,7 @@ class CBController extends Controller
             }
 
             if ($ro['type'] == 'select2') {
-                if (isset($ro['relationship_table']) && $ro['relationship_table'] && isset($ro["datatable_orig"]) && $ro["datatable_orig"] == "") {
+                if (isset($ro['relationship_table']) && $ro['relationship_table'] && isset($ro["datatable_orig"]) && $ro["datatable_orig"] == "" && isset($ro['datatable'])) {
                     $datatable = explode(",", $ro['datatable'])[0];
 
                     $foreignKey2 = CRUDBooster::getForeignKey($datatable, $ro['relationship_table']);
