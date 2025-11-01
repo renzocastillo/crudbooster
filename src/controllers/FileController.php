@@ -34,9 +34,8 @@ class FileController extends Controller
         $fullStoragePath = storage_path('app/'.$fullFilePath);
         $lifetime = 31556926; // One year in seconds
 
-        
-
-        if (! Storage::exists($fullFilePath)) {
+        // Validate that the file exists and is not a directory
+        if (! Storage::exists($fullFilePath) || ! is_file($fullStoragePath)) {
             abort(404);
         }
 
