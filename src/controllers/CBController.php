@@ -1140,7 +1140,7 @@ class CBController extends Controller
             }
 
             if (isset($ro['type']) && ($ro['type'] == 'select' || $ro['type'] == 'select2')) {
-                if ($ro['datatable']) {
+                if (isset($ro['datatable']) && $ro['datatable']) {
                     if ($inputdata == '') {
                         $this->arr[$name] = 0;
                     }
