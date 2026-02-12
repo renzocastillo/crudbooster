@@ -101,7 +101,7 @@ class CRUDBoosterServiceProvider extends ServiceProvider
     {
         foreach (glob("$path/*.php") as $filename)
         {
-            include $filename;
+            include_once $filename;
             $classes = get_declared_classes();
             $class = end($classes);
 
