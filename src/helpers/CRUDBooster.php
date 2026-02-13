@@ -941,44 +941,46 @@ class CRUDBooster
         return self::findPrimaryKey($table);
     }
 
-//     public static function findPrimaryKey($table)
-//     {
-//         if (! $table) {
-//             return 'id';
-//         }
-
-//         if (self::getCache('table_'.$table, 'primary_key')) {
-//             return self::getCache('table_'.$table, 'primary_key');
-//         }
-//         $table = CRUDBooster::parseSqlTable($table);
-
-//         if (! $table['table']) {
-//             throw new \Exception("parseSqlTable can't determine the table");
-//         }
-//         $query = config('database.connections.'.config('database.default').'.driver') == 'pgsql' ? "select * from information_schema.key_column_usage WHERE TABLE_NAME = '$table[table]'" : "select * from information_schema.COLUMNS where TABLE_SCHEMA = '$table[database]' and TABLE_NAME = '$table[table]' and COLUMN_KEY = 'PRI'";
-//         $keys = DB::select($query);
-//         $primary_key = $keys[0]->COLUMN_NAME;
-//         if ($primary_key) {
-//             self::putCache('table_'.$table, 'primary_key', $primary_key);
-
-//             return $primary_key;
-//         } else {
-//             return 'id';
-//         }
-//     }
-
     public static function findPrimaryKey($table)
     {
-        if(!$table)
-        {
+        if (!$table) {
             return 'id';
         }
 
-        $pk = DB::getDoctrineSchemaManager()->listTableDetails($table)->getPrimaryKey();
-        if(!$pk) {
-            return null;
+        $table = CRUDBooster::parseSqlTable($table);
+        $tableName = $table['table'];
+
+        $driver = config('database.connections.' . config('database.default') . '.driver');
+
+        if ($driver === 'sqlite') {
+            $columns = DB::select("PRAGMA table_info({$tableName})");
+            foreach ($columns as $column) {
+                if ($column->pk) {
+                    return $column->name;
+                }
+            }
+
+            return 'id';
         }
-        return $pk->getColumns()[0];
+
+        if ($driver === 'pgsql') {
+            $keys = DB::select(
+                "SELECT column_name FROM information_schema.key_column_usage WHERE table_name = ?",
+                [$tableName]
+            );
+        } else {
+            $database = $table['database'];
+            $keys = DB::select(
+                "SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_KEY = 'PRI'",
+                [$database, $tableName]
+            );
+        }
+
+        if (!empty($keys)) {
+            return $keys[0]->COLUMN_NAME ?? $keys[0]->column_name ?? 'id';
+        }
+
+        return 'id';
     }
 
     public static function newId($table)
