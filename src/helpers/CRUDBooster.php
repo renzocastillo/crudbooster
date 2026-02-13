@@ -616,8 +616,8 @@ class CRUDBooster
 
         try {
             //MySQL & SQL Server
-            $isNULL = DB::select(DB::raw("select IS_NULLABLE from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME='$table' and COLUMN_NAME = '$field'"))[0]->IS_NULLABLE;
-            $isNULL = ($isNULL == 'YES') ? true : false;
+            $result = DB::select("SELECT IS_NULLABLE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ? AND COLUMN_NAME = ?", [$table, $field]);
+            $isNULL = !empty($result) && $result[0]->IS_NULLABLE === 'YES';
             Cache::forever('field_isNull_'.$table.'_'.$field, $isNULL);
         } catch (\Exception $e) {
             $isNULL = false;
@@ -645,7 +645,10 @@ class CRUDBooster
                     }
                 } else {
                     //MySQL & SQL Server
-                    $typedata = DB::select(DB::raw("select DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME='$table' and COLUMN_NAME = '$field'"))[0]->DATA_TYPE;
+                    $result = DB::select("SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ? AND COLUMN_NAME = ?", [$table, $field]);
+                    if (!empty($result)) {
+                        $typedata = $result[0]->DATA_TYPE;
+                    }
                 }
             } catch (\Exception $e) {
                 try {
