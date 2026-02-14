@@ -12,22 +12,22 @@ class FileController extends Controller
     {
 
         if ($two) {
-            $fullFilePath = 'uploads'.DIRECTORY_SEPARATOR.$one.DIRECTORY_SEPARATOR.$two;
+            $fullFilePath = 'uploads/'.$one.'/'.$two;
             $filename = $two;
             if ($three) {
-                $fullFilePath = 'uploads'.DIRECTORY_SEPARATOR.$one.DIRECTORY_SEPARATOR.$two.DIRECTORY_SEPARATOR.$three;
+                $fullFilePath = 'uploads/'.$one.'/'.$two.'/'.$three;
                 $filename = $three;
                 if ($four) {
-                    $fullFilePath = 'uploads'.DIRECTORY_SEPARATOR.$one.DIRECTORY_SEPARATOR.$two.DIRECTORY_SEPARATOR.$three.DIRECTORY_SEPARATOR.$four;
+                    $fullFilePath = 'uploads/'.$one.'/'.$two.'/'.$three.'/'.$four;
                     $filename = $four;
                     if ($five) {
-                        $fullFilePath = 'uploads'.DIRECTORY_SEPARATOR.$one.DIRECTORY_SEPARATOR.$two.DIRECTORY_SEPARATOR.$three.DIRECTORY_SEPARATOR.$four.DIRECTORY_SEPARATOR.$five;
+                        $fullFilePath = 'uploads/'.$one.'/'.$two.'/'.$three.'/'.$four.'/'.$five;
                         $filename = $five;
                     }
                 }
             }
         } else {
-            $fullFilePath = 'uploads'.DIRECTORY_SEPARATOR.$one;
+            $fullFilePath = 'uploads/'.$one;
             $filename = $one;
         }
 
@@ -39,12 +39,13 @@ class FileController extends Controller
             abort(404);
         }
 
-        $handler = new \Symfony\Component\HttpFoundation\File\File(storage_path('app/'.$fullFilePath));
-        
+        $handler = new \Symfony\Component\HttpFoundation\File\File($fullStoragePath);
+
         $extension = strtolower(File::extension($fullStoragePath));
         $images_ext = config('crudbooster.IMAGE_EXTENSIONS', 'jpg,png,gif,bmp');
         $images_ext = explode(',', $images_ext);
         $imageFileSize = 0;
+        $imgRaw = null;
 
         if (in_array($extension, $images_ext)) {
             $defaultThumbnail = config('crudbooster.DEFAULT_THUMBNAIL_WIDTH');
@@ -56,18 +57,15 @@ class FileController extends Controller
                 $h = Request::get('h') ?: $w;
             }
 
-            $imgRaw = Image::cache(function ($image) use ($fullStoragePath, $w, $h) {
-                $im = $image->make($fullStoragePath);
-                if ($w) {
-                    if (! $h) {
-                        $im->fit($w);
-                    } else {
-                        $im->fit($w, $h);
-                    }
+            $img = Image::make($fullStoragePath);
+            if ($w) {
+                if (! $h) {
+                    $img->fit($w);
+                } else {
+                    $img->fit($w, $h);
                 }
-
-                return $im;
-            });
+            }
+            $imgRaw = (string) $img->encode();
 
             $imageFileSize = mb_strlen($imgRaw, '8bit') ?: 0;
         }
@@ -111,9 +109,9 @@ class FileController extends Controller
             }
         } else {
             if (Request::get('download')) {
-                return Response::download(storage_path('app/'.$fullFilePath), $filename, $headers);
+                return Response::download($fullStoragePath, $filename, $headers);
             } else {
-                return Response::file(storage_path('app/'.$fullFilePath), $headers);
+                return Response::file($fullStoragePath, $headers);
             }
         }
     }
