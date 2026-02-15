@@ -1938,6 +1938,25 @@ class CRUDBooster
     | $namespace    = namespace of controller (optional)
     |
     */
+    /**
+     * Build route wildcard string from a method's parameter names.
+     * e.g. getDetail($id) => '/{id?}', postSave($id, $type) => '/{id?}/{type?}'
+     */
+    private static function buildWildcardsFromMethod(\ReflectionMethod $method)
+    {
+        $params = $method->getParameters();
+        if (empty($params)) {
+            return '';
+        }
+
+        $wildcards = '';
+        foreach ($params as $param) {
+            $wildcards .= '/{' . $param->getName() . '?}';
+        }
+
+        return $wildcards;
+    }
+
     public static function routeController($prefix, $controller, $namespace = null)
     {
 
@@ -1950,10 +1969,11 @@ class CRUDBooster
 
             $controller_class = new \ReflectionClass($namespace.'\\'.$controller);
             $controller_methods = $controller_class->getMethods(\ReflectionMethod::IS_PUBLIC);
-            $wildcards = '/{one?}/{two?}/{three?}/{four?}/{five?}';
             foreach ($controller_methods as $method) {
 
                 if ($method->class != 'Illuminate\Routing\Controller' && $method->name != 'getIndex') {
+                    $wildcards = static::buildWildcardsFromMethod($method);
+
                     if (substr($method->name, 0, 3) == 'get') {
                         $method_name = substr($method->name, 3);
                         $slug = array_filter(preg_split('/(?=[A-Z])/', $method_name));
