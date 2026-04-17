@@ -1258,7 +1258,7 @@ class CBController extends Controller
                 $name = str_slug($ro['label'], '');
                 $columns = $ro['columns'];
                 $getColName = request($name.'-'.$columns[0]['name']);
-                $count_input_data = ($getColName)?(count($getColName) - 1):0;
+                $count_input_data = is_array($getColName) ? (count($getColName) - 1) : -1;
                 $child_array = [];
                 $fk = $ro['foreign_key'];
 
@@ -1266,7 +1266,8 @@ class CBController extends Controller
                     $column_data = [];
                     foreach ($columns as $col) {
                         $colname = $col['name'];
-                        $colvalue = request($name.'-'.$colname)[$i];
+                        $requestData = request($name.'-'.$colname);
+                        $colvalue = is_array($requestData) ? ($requestData[$i] ?? null) : null;
                         if(isset($colvalue) === TRUE) {
                             $column_data[$colname] = $colvalue;
                         }
@@ -1278,7 +1279,9 @@ class CBController extends Controller
                 }
 
                 $childtable = CRUDBooster::parseSqlTable($ro['table'])['table'];
-                DB::table($childtable)->insert($child_array);
+                if (!empty($child_array)) {
+                    DB::table($childtable)->insert($child_array);
+                }
             }
         }
 
@@ -1406,7 +1409,7 @@ class CBController extends Controller
                 $name = str_slug($ro['label'], '');
                 $columns = $ro['columns'];
                 $getColName = request($name.'-'.$columns[0]['name']);
-                $count_input_data = ($getColName)?(count($getColName) - 1):0;
+                $count_input_data = is_array($getColName) ? (count($getColName) - 1) : -1;
                 $child_array = [];
                 $childtable = CRUDBooster::parseSqlTable($ro['table'])['table'];
                 $fk = $ro['foreign_key'];
@@ -1419,7 +1422,8 @@ class CBController extends Controller
                     $column_data = [];
                     foreach ($columns as $col) {
                         $colname = $col['name'];
-                        $colvalue = request($name.'-'.$colname)[$i];
+                        $requestData = request($name.'-'.$colname);
+                        $colvalue = is_array($requestData) ? ($requestData[$i] ?? null) : null;
                         if(isset($colvalue) === TRUE) {
                             $column_data[$colname] = $colvalue;
                         }
@@ -1432,7 +1436,9 @@ class CBController extends Controller
                     }
                 }
                 $child_array = array_reverse($child_array);
-                DB::table($childtable)->insert($child_array);
+                if (!empty($child_array)) {
+                    DB::table($childtable)->insert($child_array);
+                }
             }
         }
 
